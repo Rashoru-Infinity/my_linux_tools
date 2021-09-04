@@ -1,0 +1,4 @@
+bin/
+*.o
+srcs/gacha/gacha
+srcs/printdump/printdump
