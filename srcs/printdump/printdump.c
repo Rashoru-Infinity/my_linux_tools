@@ -91,9 +91,13 @@ int main(int argc, char **argv) {
 		memset(addr_str, 0, ADDR_STR_LENGTH);
 		memset(line, 0, HEX_LENGTH);
 		memset(read_buf, 0, WORD);
-		sprintf(addr_str, "%p\t", address);
-		memset(addr_str + strlen(addr_str), '\t',
-		strlen(addr_str) % TAB_STOP ? (TAB_STOP * 3 - strlen(addr_str)) / TAB_STOP + 1 : (TAB_STOP * 3 - strlen(addr_str)) / TAB_STOP);
+		if (address)
+			sprintf(addr_str, "%p", address);
+		else
+			sprintf(addr_str, "0x00");
+		memset(addr_str + strlen(addr_str), '\t', strlen(addr_str) % 8 ?
+		(TAB_STOP * 3 - strlen(addr_str)) / TAB_STOP + 1
+		: (TAB_STOP * 3 - strlen(addr_str)) / TAB_STOP);
 		read_size = fread(read_buf, sizeof(char), WORD, file);
 		if (ferror(file)) {
 			printf("fail to read file\n");
@@ -127,10 +131,7 @@ int main(int argc, char **argv) {
 		if (read_size % TAB_STOP)
 			tab_cnt++;
 		memset(line + strlen(line), '\t', tab_cnt);
-		if (address)
-			buffered_write(addr_str, strlen(addr_str), 0);
-		else
-			buffered_write("0x00\t\t\t\t", strlen("0x00\t\t\t\t"), 0);
+		buffered_write(addr_str, strlen(addr_str), 0);
 		buffered_write(line, strlen(line), 0);
 		write_ascii(read_buf, read_size);
 		address += 0x10;
